@@ -5,6 +5,8 @@
     <script src="script.js"></script>
   </head>
   <body>
+    <p><button onclick="goFullScreen();" style="width: 300; height: 300">Go Fullscreen</button></p>
+
     <div class="contentarea">
       <h1>MDN - navigator.mediaDevices.getUserMedia(): Still output capture demo</h1>
       <p>
@@ -16,7 +18,7 @@
         <button id="startbutton">Take output</button>
       </div>
       <canvas id="canvas"> </canvas>
-      <div class="output">
+      <div class="output" width="1800" height="900">
         <img id="output" alt="The screen capture will appear in this box." />
       </div>
       <p>
@@ -25,6 +27,5 @@
         to learn more about the technologies used here.
       </p>
     </div>
-    <p><button onclick="goFullScreen();">Go Fullscreen</button></p>
   </body>
 </html>

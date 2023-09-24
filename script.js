@@ -1,3 +1,6 @@
+let mouseX = 0;
+let mouseY = 0;
+
 (() => {
   // The width and height of the captured output. We will set the
   // width to the value defined here, but the height will be
@@ -18,6 +21,7 @@
   let canvas = null;
   let output = null;
   let startbutton = null;
+  let outputContext = null;
 
   function showViewLiveResultButton() {
     if (window.self !== window.top) {
@@ -41,6 +45,19 @@
     video = document.getElementById("video");
     canvas = document.getElementById("canvas");
     output = document.getElementById("output");
+
+    function getCursorPosition(canvas, event) {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX;
+      const y = event.clientY;
+      console.log("x: " + x + " y: " + y);
+      mouseX = x;
+      mouseY = y;
+    }
+    output.addEventListener("mousemove", function (e) {
+      getCursorPosition(output, e);
+    });
+
     startbutton = document.getElementById("startbutton");
 
     navigator.mediaDevices
@@ -87,21 +104,46 @@
       false
     );
     function convertToGrayscale() {
-      const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, width, height);
-      const imageData = context.getImageData(0, 0, width, height);
+      outputContext = canvas.getContext("2d");
+      outputContext.drawImage(video, 0, 0, width, height);
+      const imageData = outputContext.getImageData(0, 0, width, height);
       const data = imageData.data;
       for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        // if (avg > 100) {
+        //   avg = 255;
+        // } else {
+        //   avg = 0;
+        // }
         data[i] = avg; // red
         data[i + 1] = avg; // green
         data[i + 2] = avg; // blue
       }
-      context.putImageData(imageData, 0, 0);
+
+      outputContext.putImageData(imageData, 0, 0);
+      drawInterface(outputContext);
       // output to output element
       const dataURI = canvas.toDataURL("image/png");
+
       output.setAttribute("src", dataURI);
       setTimeout(convertToGrayscale, 1000 / 60);
+    }
+    function drawInterface(context) {
+      circleAtPointer(context);
+    }
+
+    function circleAtPointer(context) {
+      var centerX = mouseX;
+      var centerY = mouseY;
+      var radius = 70;
+
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+      context.fillStyle = "green";
+      context.fill();
+      context.lineWidth = 5;
+      context.strokeStyle = "#003300";
+      context.stroke();
     }
 
     startbutton.addEventListener(
